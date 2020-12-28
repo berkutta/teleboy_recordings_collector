@@ -35,7 +35,6 @@ foreach($teleboy->recordings() as $recording) {
 
         // Just download if not already downloaded
         if(!glob($config["recording_path"].$file_prefix."*.mp4")) {
-            file_put_contents($config["recording_path"].$file_prefix.".json", json_encode($recording));
             file_put_contents($config["recording_path"].$file_prefix.".mp4", fopen($teleboy->recording_download_url($recording->id), 'r'));
         }
     } else {
