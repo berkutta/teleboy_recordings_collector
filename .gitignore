@@ -1,1 +1,4 @@
 config.inc.php
+*.json
+cookie.txt
+run.sh
