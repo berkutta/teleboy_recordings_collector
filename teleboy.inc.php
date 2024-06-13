@@ -15,7 +15,7 @@ class Teleboy {
         curl_setopt($this->curl, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($this->curl, CURLOPT_COOKIEJAR, 'cookie.txt');
-        curl_setopt($this->curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0');
+        curl_setopt($this->curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0');
         curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
@@ -56,10 +56,15 @@ class Teleboy {
             "x-teleboy-device-type: desktop",
             "x-teleboy-version: 2.0",
           ));
+
+        // Reset cURL POST fields
+        // This also ensures to not send any Content-Length headers which might cause a 400 response
+        curl_setopt($this->curl, CURLOPT_POSTFIELDS, NULL);
+        curl_setopt($this->curl, CURLOPT_POST, false);
     }
 
     public function recordings() {
-        curl_setopt($this->curl, CURLOPT_URL, "https://tv.api.teleboy.ch/users/".$this->tvapiuserid."/recordings/ready?desc=1&expand=flags&limit=20&skip=0&sort=date");
+        curl_setopt($this->curl, CURLOPT_URL, "https://web-api.teleboy.ch/users/".$this->tvapiuserid."/recordings?skip=0&type=ready&query=&genre=0&sort=date&desc=1&limit=30");
         
         $recordings_output = curl_exec($this->curl);
         if(curl_getinfo($this->curl, CURLINFO_HTTP_CODE) != 200) {
@@ -70,7 +75,7 @@ class Teleboy {
     }
 
     public function recording_max_profile($recordingid) {
-        curl_setopt($this->curl, CURLOPT_URL, "https://tv.api.teleboy.ch/users/".$this->tvapiuserid."/recordings/".$recordingid."/download");
+        curl_setopt($this->curl, CURLOPT_URL, "https://web-api.teleboy.ch/users/".$this->tvapiuserid."/recordings/".$recordingid."/download");
     
         $recording_output = curl_exec($this->curl);
         if(curl_getinfo($this->curl, CURLINFO_HTTP_CODE) != 200) {
@@ -84,7 +89,7 @@ class Teleboy {
     public function recording_download_url($recordingid) {
         $profile = $this->recording_max_profile($recordingid);
 
-        curl_setopt($this->curl, CURLOPT_URL, "https://tv.api.teleboy.ch/users/".$this->tvapiuserid."/recordings/".$recordingid."/download/".$profile."?alternative=0");
+        curl_setopt($this->curl, CURLOPT_URL, "https://web-api.teleboy.ch/users/".$this->tvapiuserid."/recordings/".$recordingid."/download/".$profile."?alternative=0");
     
         $download_output = curl_exec($this->curl);
         if(curl_getinfo($this->curl, CURLINFO_HTTP_CODE) != 200) {
